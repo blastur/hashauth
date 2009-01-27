@@ -25,16 +25,18 @@
     * Attachs the autocomplete object to a form element. Sets
     * onkeypress event on the form element.
     * 
-    * @param string formElement Name of form element to attach to
-    * @param array  data        Array of strings of which to use as the autocomplete data
+    * @param string formElement 		Name of form element to attach to
+    * @param array  data        		Array of strings of which to use as the autocomplete data
+	* @param func	setvalue_callback	Callback triggered whenever a new value is set (null to disable)
     */
-    function AutoComplete_Create (id, data)
+    function AutoComplete_Create (id, data, setvalue_callback)
     {
         __AutoComplete[id] = {'data':data,
                               'isVisible':false,
                               'element':document.getElementById(id),
-                              'dropdown':null,
-                              'highlighted':null};
+                              'dropdown':null,							
+                              'highlighted':null,
+							  'onSetValue':null};
 
         __AutoComplete[id]['element'].setAttribute('autocomplete', 'off');
         __AutoComplete[id]['element'].onkeydown  = function(e) {return AutoComplete_KeyDown(this.getAttribute('id'), e);}
@@ -346,6 +348,8 @@
     function AutoComplete_SetValue(id)
     {
         __AutoComplete[id]['element'].value = __AutoComplete[id]['dropdown'].childNodes[__AutoComplete[id]['highlighted']].innerHTML;
+		if (__AutoComplete[id]['onSetValue'])
+			__AutoComplete[id]['onSetValue'](id, __AutoComplete[id]['dropdown'].childNodes[__AutoComplete[id]['highlighted']].innerHTML);
     }
     
     
