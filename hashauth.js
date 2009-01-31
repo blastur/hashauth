@@ -26,12 +26,20 @@ var fallbackEngine = 'b64_sha1';
  *  TODO: MSIE support
  */
 
-function setManualMode(enabled)
+function setManualMode(enable)
 {
-	m_manual = enabled;
-	if (enabled)
+	m_manual = enable;
+	if (enable) {
+		/* load up the defaults, if we have any ... */
+		if (m_profile != null && m_profile['default'] != undefined) {
+			document.generate.salt.value = m_profile['default']['salt'];
+			document.generate.outputlength.value = m_profile['default']['outputlength'];
+			document.generate.hashengine.value = m_profile['default']['hashengine'];
+		}
+				
+		document.generate.salt.focus();
 		visibility('manual', 'block');		
-	else
+	} else
 		visibility('manual', 'none');
 }
 
