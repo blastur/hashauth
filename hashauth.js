@@ -2,9 +2,27 @@ var m_master = null;
 var m_profile = null;
 var m_manual = false;
 
+var hashEngines = {
+	"b64_sha1": {
+		"f": b64_sha1,
+		"maxlength": 27
+	},
+
+ 	"hex_sha1": {
+		"f": hex_sha1,
+		"maxlength": 40
+	},
+
+	"dec_sha1": {
+		"f": dec_sha1,
+		"maxlength": 10 
+	}
+};
+
+var fallbackEngine = 'b64_sha1';
+
 /**
- * 	TODO: Make sure outputlength isn't > engine output
- *  TODO: Setup an array with available hash engines, to validate lengths etc
+ *  TODO: Get rid of awkward HTML dependency
  *  TODO: MSIE support
  */
 
@@ -60,7 +78,7 @@ function fetchProfile(url)
 				if (req.status == 200) {	
 					initProfile(req.responseText);
 				} else {
-					alert("Failed to fetch profile. Reverting to manual mode! [" + req.statusText + "]");
+					alert("Failed to fetch profile, reverting to manual mode: " + req.statusText);
 					setManualMode(true);
 				}
 			}	
@@ -144,14 +162,21 @@ function getProfileSettings(resource)
 
 function buildHash(resource, settings)
 {
-	if (settings['hashengine'] != 'b64_sha1' && 
-		settings['hashengine'] != 'hex_sha1') {
-		alert("Unknown hashengine: " + settings['hashengine'] + ". Reverting to 'hex_sha1'");
+	if (hashEngines[settings['hashengine']] == undefined) {
+		settings['hashengine'] = fallbackEngine;
+		alert("Unknown hash engine, reverting to " + fallbackEngine);
 	}
 
-	var engine = (settings['hashengine'] == 'b64_sha1') ? b64_sha1 : hex_sha1;
+	var engine = hashEngines[settings['hashengine']];
 	var input = m_master + ":" + resource + ":" + settings['salt'];
-	var output = engine(input);
+	var output = engine.f(input);
+
+	if (settings['outputlength'] > engine.maxlength) {
+		alert(settings['hashengine'] + ' only supports up to ' + 
+			  engine.maxlength + ' chars output. Truncating ' + 
+			  settings['outputlength'] + " to " + engine.maxlength);
+		settings['outputlength'] = engine.maxlength;
+	}
 
 	output = output.substr(0, settings['outputlength']);
 	

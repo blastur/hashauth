@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 	<head>
-		<title>Auth hash</title>		
+		<title>Hashauth</title>		
 		<script type="text/javascript" src="sha1.js"></script>
 		<script type="text/javascript" src="hashauth.js"></script>
 		<script type="text/javascript" src="json2.js"></script>
@@ -23,7 +23,7 @@
 				border-width: 1px;
 				margin: 5px;
 				padding: 5px;
-				width: 400px;
+				width: 500px;
 			}
 
 			.autocomplete {
@@ -65,7 +65,7 @@
 
 				<div class="entry">					
 					<label for="profile">Profile</label>
-					<input type="text" name="profile" value="http://b.duskwood.com/startup/pass2/personal.php" />
+					<input type="text" name="profile" value="" />
 				</div>
 
             	<div class="entry">
@@ -101,7 +101,7 @@
 
 		        <div class="entry">
 	                <input type="submit" value="Generate" />
-	                <input type="text" name="password" />
+	                <input type="text" name="password" size="30" />
 	                <input type="button" value="Logout" onclick="return logout()" />
 		        </div>
             </form>

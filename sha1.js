@@ -22,6 +22,7 @@ var chrsz   = 8;  /* bits per input character. 8 - ASCII; 16 - Unicode      */
 function hex_sha1(s){return binb2hex(core_sha1(str2binb(s),s.length * chrsz));}
 function b64_sha1(s){return binb2b64(core_sha1(str2binb(s),s.length * chrsz));}
 function str_sha1(s){return binb2str(core_sha1(str2binb(s),s.length * chrsz));}
+function dec_sha1(s){return binb2dec(core_sha1(str2binb(s),s.length * chrsz));}
 function hex_hmac_sha1(key, data){ return binb2hex(core_hmac_sha1(key, data));}
 function b64_hmac_sha1(key, data){ return binb2b64(core_hmac_sha1(key, data));}
 function str_hmac_sha1(key, data){ return binb2str(core_hmac_sha1(key, data));}
@@ -199,4 +200,17 @@ function binb2b64(binarray)
     }
   }
   return str;
+}
+
+function binb2dec(binarray)
+{
+	/* dec of first 32 bits => 0 to (2^32)-1 */
+	var hex = binb2hex(binarray);
+	var dec = parseInt(hex.substr(0,8), 16);	
+	var str = dec.toString();
+	
+	/* zeropad ;-) */
+	while (str.length < 10)
+		str = "0" + str;
+	return str;
 }
