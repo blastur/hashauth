@@ -1,6 +1,6 @@
 <?php
 
-/* default settings */
+/* default settings, (_really_) should specify all possible cfg keys */
 $default = array(
 	"hashengine" => "b64_sha1",
 	"outputlength" => 27,
@@ -16,7 +16,7 @@ $chulak = array("outputlength" => 16, "hashengine" => "hex_sha1");
 $resources = array(
 	"viktklubb.se" => $vk,
 	"facebook.com" => $facebook,
-	"admin@chulak/ssh" => $chulak,
+	"admin@chulak" => $chulak,
 );
 
 
