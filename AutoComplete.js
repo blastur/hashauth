@@ -36,7 +36,7 @@
                               'element':document.getElementById(id),
                               'dropdown':null,							
                               'highlighted':null,
-							  'onSetValue':null};
+			      'onSetValue':setvalue_callback};
 
         __AutoComplete[id]['element'].setAttribute('autocomplete', 'off');
         __AutoComplete[id]['element'].onkeydown  = function(e) {return AutoComplete_KeyDown(this.getAttribute('id'), e);}
@@ -44,7 +44,7 @@
         __AutoComplete[id]['element'].onkeypress = function(e) {if (!e) e = window.event; if (e.keyCode == 13 || isOpera) return false;}
         __AutoComplete[id]['element'].ondblclick = function() {AutoComplete_ShowDropdown(this.getAttribute('id'));}
         __AutoComplete[id]['element'].onclick    = function(e) {if (!e) e = window.event; e.cancelBubble = true; e.returnValue = false;}
-
+	
         // Hides the dropdowns when document clicked
         var docClick = function()
         {
@@ -348,8 +348,8 @@
     function AutoComplete_SetValue(id)
     {
         __AutoComplete[id]['element'].value = __AutoComplete[id]['dropdown'].childNodes[__AutoComplete[id]['highlighted']].innerHTML;
-		if (__AutoComplete[id]['onSetValue'])
-			__AutoComplete[id]['onSetValue'](id, __AutoComplete[id]['dropdown'].childNodes[__AutoComplete[id]['highlighted']].innerHTML);
+	if (__AutoComplete[id].onSetValue)
+		__AutoComplete[id].onSetValue(id, __AutoComplete[id]['dropdown'].childNodes[__AutoComplete[id]['highlighted']].innerHTML);
     }
     
     
