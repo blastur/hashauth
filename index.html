@@ -5,57 +5,12 @@
 		<script type="text/javascript" src="sha1.js"></script>
 		<script type="text/javascript" src="hashauth.js"></script>
 		<script type="text/javascript" src="json2.js"></script>
-		<script type="text/javascript" src="AutoComplete.js"></script>
-
-		<style type="text/css">
-		<!--
-			body {
-				font-family: Arial; 
-				font-size: 12px;				
-			}
-
-			#generator {
-				display: none;
-			}
-
-			.entry {
-				border-style: solid;
-				border-width: 1px;
-				margin: 5px;
-				padding: 5px;
-				width: 500px;
-			}
-
-			.autocomplete {
-				font-family: Tahoma;
-				font-size: 8pt;
-				background-color: white;
-				border: 1px solid black;
-				position: absolute;
-				cursor: default;
-				overflow: auto;
-				overflow-x: hidden;
-			}
-
-			.autocomplete_item {
-				padding: 1px;
-				padding-left: 5px;
-				color: black;
-				width: 100%;
-			}
-
-			.autocomplete_item_highlighted {
-				padding: 1px;
-				padding-left: 5px;
-				color: white;
-				background-color: #0A246A;
-			}
-			
-		-->
-		</style>
+		<script type="text/javascript" src="AutoComplete.js"></script>		
+		<link rel="stylesheet" type="text/css" media="screen" href="hashauth.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="AutoComplete.css" />
 	</head>
 
-	<body onload="document.login.master.focus()">
+	<body onload="visibility('generator', 'none'); document.login.master.focus()">
 		<div id="configuration">
 			<form name="login" method="post" action="#" onsubmit="return logon()">
             	<div class="entry">
@@ -102,8 +57,11 @@
 		        <div class="entry">
 	                <input type="submit" value="Generate" />
 	                <input type="text" name="password" size="30" />
-	                <input type="button" value="Logout" onclick="return logout()" />
 		        </div>
+
+				<div class="entry">
+					<input type="button" value="Logout" onclick="return logout()" />
+				</div>
             </form>
         </div>
 	</body>

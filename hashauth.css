@@ -1,0 +1,27 @@
+body {
+	font-family: Arial; 
+	font-size: 12px;				
+}
+
+.entry {
+	border-style: solid;
+	border-width: 1px;
+	margin: 5px;
+	padding: 5px;
+
+}
+
+label {
+	width: 100px;
+	float: left;
+	margin-right: 5px;
+	vertical-align: middle;	
+}
+
+#generator {
+	width: 400px;
+}
+
+#configuration {
+	width: 300px;
+}
