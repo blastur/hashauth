@@ -10,30 +10,17 @@
 		<link rel="stylesheet" type="text/css" media="screen" href="AutoComplete.css" />
 	</head>
 
-	<body onload="visibility('generator', 'none'); document.login.master.focus()">
-		<div id="configuration">
-			<form name="login" method="post" action="#" onsubmit="return logon()">
-            	<div class="entry">
+	<body onload="document.generate.master.focus()">
+        	<div id="generator">
+			<form name="generate" method="post" action="#" onsubmit="return generatehash()">
+	           		<div class="entry">
 					<label for="master">Master password</label>
 					<input type="password" name="master" />
-            	</div>
+	            		</div>
 
-				<div class="entry">					
-					<label for="profile">Profile</label>
-					<input type="text" name="profile" value="" />
-				</div>
-
-            	<div class="entry">
-					<input type="submit" value="Login" />
-            	</div>
-			</form>		
-		</div>
-
-        <div id="generator">
-            <form name="generate" method="post" action="#" onsubmit="return generateHash()">
-		        <div class="entry">
-		            <label for="resource">Resource</label>
-		            <input type="text" id="resource" name="resource" />
+				<div class="entry">
+					<label for="resource">Resource</label>
+		            		<input type="text" id="resource" name="resource" />
 					
 					<!-- These settings only make sense in 'ManualMode (tm)' -->
 					<div id="manual">
@@ -52,17 +39,19 @@
 						    <input type="text" id="hashengine" name="hashengine" value="b64_sha1" />
 						</div>
 					</div>
-		        </div>
-
-		        <div class="entry">
-	                <input type="submit" value="Generate" />
-	                <input type="text" name="password" size="30" />
-		        </div>
-
-				<div class="entry">
-					<input type="button" value="Logout" onclick="return logout()" />
 				</div>
-            </form>
-        </div>
+
+		        	<div class="entry">
+	                		<input type="submit" value="Generate" />
+	                		<input type="text" name="password" size="30" />
+		        	</div>
+
+		        	<div class="entry">
+	                		<input type="button" value="Attach profile" />
+	                		<input type="text" name="profile" size="30" />
+		        	</div>
+
+			</form>
+        	</div>
 	</body>
 </html>

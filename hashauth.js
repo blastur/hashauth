@@ -217,3 +217,10 @@ function generateHash()
 	return false;
 }
 
+function lookup_settings(resource)
+{
+}
+
+function generate_hash(settings, resource, master) 
+{
+}
