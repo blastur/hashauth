@@ -166,8 +166,10 @@ function ha_reinit() {
 
 	/* download profile, if present */
 	var profileName = readCookie('ha_profile');
-	if (profileName != null)
+	if (profileName != null) {
 		ha_fetchProfile(profileName);
+		ha_setStatus('Found stored profile "' + profileName + '"!');
+	}
 
 	ha_hashForm.master.focus();
 }
