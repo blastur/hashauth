@@ -1,51 +1,39 @@
-var m_master = null;
-var m_profile = null;
-var m_manual = false;
-
-var hashEngines = {
-	"b64_sha1": {
+/*
+ * TODO:
+ * 	- validate JSON.parse() return
+ *  - verify MSIE / opera functionality
+ *  - hide / show profile config appropriately
+ *  - manual engine selection should be a dropdown list
+ *  - generate the entire form in javascript? ^
+ *  - (properly) implement ha_setStatus()
+ *  - destroy autocomplete memory when profile is deattached
+ *
+ */
+var ha_engines = {
+	'b64_sha1': {
 		"f": b64_sha1,
 		"maxlength": 27
 	},
 
- 	"hex_sha1": {
+	'hex_sha1': {
 		"f": hex_sha1,
 		"maxlength": 40
 	},
 
-	"dec_sha1": {
+	'dec_sha1': {
 		"f": dec_sha1,
 		"maxlength": 10 
 	}
 };
 
-var fallbackEngine = 'b64_sha1';
-
-/**
- *  TODO: Get rid of awkward HTML dependency
- *  TODO: MSIE support
- */
-
-function setManualMode(enable)
-{
-	m_manual = enable;
-	if (enable) {
-		/* load up the defaults, if we have any ... */
-		if (m_profile != null && m_profile['default'] != undefined) {
-			document.generate.salt.value = m_profile['default']['salt'];
-			document.generate.outputlength.value = m_profile['default']['outputlength'];
-			document.generate.hashengine.value = m_profile['default']['hashengine'];
-		}
-				
-		document.generate.salt.focus();
-		visibility('manual', 'block');		
-	} else
-		visibility('manual', 'none');
-}
+var ha_defaultEngine = 'b64_sha1';
+var ha_hashForm;
+var ha_manualMode;
+var ha_profile;
 
 function ac_onSetValue(id, text)
 {
-	setManualMode(false);
+	ha_setManualMode(false);
 }
 
 function ac_createData(profile)
@@ -64,18 +52,36 @@ function ac_createData(profile)
 	return autoData.sort();
 }
 
-function initProfile(json)
+function ha_setStatus(txtStatus)
 {
-	m_profile = JSON.parse(json);
-	var data = ac_createData(m_profile);
-
-	if (data != false) {
-		AutoComplete_Create('resource', data, ac_onSetValue);
-	}
-	document.generate.resource.focus();
+	alert(txtStatus)
 }
 
-function fetchProfile(url)
+function ha_setManualMode(isManual)
+{
+	var manualDiv = document.getElementById('manual');
+	if (isManual) {
+		manualDiv.style.visibility = "visible";
+	} else {
+		manualDiv.style.visibility = "hidden";
+	}
+
+	ha_manualMode = isManual;
+}
+
+function ha_processProfile(json)
+{
+	ha_profile = JSON.parse(json);
+
+	/* create and initialize AutoComplete (ac_*) stuff */
+	var data = ac_createData(ha_profile);
+	if (data != false) {
+		AutoComplete_Create('resource', data, ac_onSetValue);
+		ha_setManualMode(false);
+	}
+}
+
+function ha_fetchProfile(url)
 {
 	try {
 		var req = new XMLHttpRequest();
@@ -84,105 +90,59 @@ function fetchProfile(url)
 	  	req.onreadystatechange = function() {
 			if (req.readyState == 4) {
 				if (req.status == 200) {	
-					initProfile(req.responseText);
+					ha_processProfile(req.responseText);
 				} else {
-					alert("Failed to fetch profile, reverting to manual mode: " + req.statusText);
-					setManualMode(true);
+					ha_setStatus("Failed to fetch profile, reverting to manual mode: " + req.statusText);
+					ha_setManualMode(true);
 				}
 			}	
 		}
 	
 		req.send(null);			
 	} catch (e) {
-		alert("Failed to fetch profile, reverting to manual mode: " + e.message);
-		setManualMode(true);
+		ha_setStatus("Failed to fetch profile, reverting to manual mode: " + e.message);
+		ha_setManualMode(true);
 	}
 }
 
-function visibility(id, value) {
-	if (document.getElementById) 
-		document.getElementById(id).style.display = value;	
-	else {
-		if (document.layers) 
-			document.id.display = value;		
-		else
-			document.all.id.style.display = value;		
-	}
-}
-
-
-function logon()
+function ha_lookup(profile, resource)
 {
-	m_master = document.login.master.value;	
-	if (document.login.profile.value != '') {
-		setManualMode(false);
-		fetchProfile(document.login.profile.value);
-	} else {
-		setManualMode(true);
-	}
-	
-	document.login.master.value = '';
-	document.generate.password.value = '';
-	document.generate.resource.value = '';
-	
-	visibility('configuration', 'none');
-	visibility('generator', 'block');	
-
-	document.generate.resource.focus();
-
-	return false;	
-}
-
-function logout()
-{
-	m_master = '';
-	
-	document.generate.password.value = '';
-	document.generate.resource.value = '';
-	visibility('generator', 'none');
-	visibility('configuration', 'block');	
-
-	return false;
-}
-
-function getProfileSettings(resource)
-{
-	if (m_profile == null)
+	if (profile == null)
 		return false;
 
-	if (m_profile["resource"][resource] != undefined) {
-		var profile = m_profile["resource"][resource];
+	if (profile["resource"][resource] != undefined) {
+		var settings = profile["resource"][resource];
 		
-		/* Only inherit unspecificed settings */
-		if (profile["hashengine"] == undefined)
-			profile["hashengine"] = m_profile["default"]["hashengine"];
+		/* Inherit unspecificed settings from default settings */
+		if (settings["hashengine"] == undefined)
+			settings["hashengine"] = profile["default"]["hashengine"];
 
-		if (profile["outputlength"] == undefined)
-			profile["outputlength"] = m_profile["default"]["outputlength"];
+		if (settings["outputlength"] == undefined)
+			settings["outputlength"] = profile["default"]["outputlength"];
 
-		if (profile["salt"] == undefined)
-			profile["salt"] = m_profile["default"]["salt"];
+		if (settings["salt"] == undefined)
+			settings["salt"] = profile["default"]["salt"];
 
-		return profile;
+		return settings;
 	} else
 		return false;	
 }
 
-function buildHash(resource, settings)
+function __generateHash(resource, settings)
 {
-	if (hashEngines[settings['hashengine']] == undefined) {
-		settings['hashengine'] = fallbackEngine;
-		alert("Unknown hash engine, reverting to " + fallbackEngine);
+	if (ha_engines[settings['hashengine']] == undefined) {
+		settings['hashengine'] = ha_defaultEngine;
+		ha_setStatus("Unknown hash engine, reverting to " + ha_defaultEngine);
 	}
 
-	var engine = hashEngines[settings['hashengine']];
-	var input = m_master + ":" + resource + ":" + settings['salt'];
+	var engine = ha_engines[settings['hashengine']];
+	var input = ha_hashForm.master.value + ":" + resource + ":" + settings['salt'];
 	var output = engine.f(input);
 
 	if (settings['outputlength'] > engine.maxlength) {
-		alert(settings['hashengine'] + ' only supports up to ' + 
-			  engine.maxlength + ' chars output. Truncating ' + 
-			  settings['outputlength'] + " to " + engine.maxlength);
+		ha_setStatus(settings['hashengine'] + ' only supports up to ' +
+					 engine.maxlength + ' chars output. Truncating ' +
+					 settings['outputlength'] + " to " + engine.maxlength);
 		settings['outputlength'] = engine.maxlength;
 	}
 
@@ -191,36 +151,74 @@ function buildHash(resource, settings)
 	return output;
 }
 
-function generateHash()
+function ha_reinit() {
+	/* sane defaults */
+	ha_profile = null;
+	ha_setManualMode(true);
+
+	ha_hashForm.master.value = '';
+	ha_hashForm.resource.value = '';
+	ha_hashForm.salt.value = '';
+	ha_hashForm.outputlength.value = '';
+	ha_hashForm.hashengine.value = '';
+	ha_hashForm.password.value = '';
+	ha_hashForm.profile.value = '';
+
+	/* download profile, if present */
+	var profileName = readCookie('ha_profile');
+	if (profileName != null)
+		ha_fetchProfile(profileName);
+
+	ha_hashForm.master.focus();
+}
+
+/* exported symbols */
+function ha_attachProfile(profileName)
+{
+	if (profileName != "") {
+		createCookie('ha_profile', profileName, 30);
+		ha_fetchProfile(profileName);
+	} else {
+		ha_setStatus("Invalid profilename");
+	}
+}
+
+function ha_deattachProfile()
+{
+	eraseCookie('ha_profile');
+	ha_reinit();
+}
+
+function ha_init(aForm)
+{
+	ha_hashForm = aForm;
+	ha_reinit();
+}
+
+function ha_generateHash()
 {	
-	var resource = document.generate.resource.value;
-	
-	var settings = getProfileSettings(resource);
+	var resource = ha_hashForm.resource.value;
+	var settings = ha_lookup(ha_profile, resource);
+
 	if (!settings) {
-		if (m_manual) {
+		if (ha_manualMode) {
 			settings = [];
-			settings['resource'] = document.generate.resource.value; 
-			settings['hashengine'] = document.generate.hashengine.value; 
-			settings['salt'] = document.generate.salt.value; 
-			settings['outputlength'] = document.generate.outputlength.value; 			
+			settings['resource'] = ha_hashForm.resource.value;
+			settings['hashengine'] = ha_hashForm.hashengine.value;
+			settings['salt'] = ha_hashForm.salt.value;
+			settings['outputlength'] = ha_hashForm.outputlength.value;
 		} else {
-			setManualMode(true);
+			ha_setStatus("You specified an unknown resource. Please fill out the missing information!");
+			ha_setManualMode(true);
 			return false;
 		}		
 	}
 		
-	var hash = buildHash(resource, settings);
-	document.generate.password.value = hash;
-	document.generate.password.select();
-	document.generate.password.focus();
+	var hash = __generateHash(resource, settings);
+	ha_hashForm.password.value = hash;
+	ha_hashForm.password.select();
+	ha_hashForm.password.focus();
 	
 	return false;
 }
 
-function lookup_settings(resource)
-{
-}
-
-function generate_hash(settings, resource, master) 
-{
-}

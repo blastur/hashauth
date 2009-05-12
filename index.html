@@ -5,22 +5,23 @@
 		<script type="text/javascript" src="sha1.js"></script>
 		<script type="text/javascript" src="hashauth.js"></script>
 		<script type="text/javascript" src="json2.js"></script>
-		<script type="text/javascript" src="AutoComplete.js"></script>		
+		<script type="text/javascript" src="cookie.js"></script>
+		<script type="text/javascript" src="AutoComplete.js"></script>
 		<link rel="stylesheet" type="text/css" media="screen" href="hashauth.css" />
 		<link rel="stylesheet" type="text/css" media="screen" href="AutoComplete.css" />
 	</head>
 
-	<body onload="document.generate.master.focus()">
-        	<div id="generator">
-			<form name="generate" method="post" action="#" onsubmit="return generatehash()">
-	           		<div class="entry">
+	<body onload="ha_init(document.frmGen)">
+		<div id="generator">
+			<form name="frmGen" method="post" action="#" onsubmit="return ha_generateHash()">
+				<div class="entry">
 					<label for="master">Master password</label>
 					<input type="password" name="master" />
-	            		</div>
+	            </div>
 
 				<div class="entry">
 					<label for="resource">Resource</label>
-		            		<input type="text" id="resource" name="resource" />
+					<input type="text" id="resource" name="resource" size="50"/>
 					
 					<!-- These settings only make sense in 'ManualMode (tm)' -->
 					<div id="manual">
@@ -41,17 +42,17 @@
 					</div>
 				</div>
 
-		        	<div class="entry">
-	                		<input type="submit" value="Generate" />
-	                		<input type="text" name="password" size="30" />
-		        	</div>
+		        <div class="entry">
+					<input type="submit" value="Generate" />
+					<input type="text" name="password" size="30" />
+				</div>
 
-		        	<div class="entry">
-	                		<input type="button" value="Attach profile" />
-	                		<input type="text" name="profile" size="30" />
-		        	</div>
-
+		        <div class="entry">
+					<input type="button" value="Attach profile" onclick="ha_attachProfile(profile.value)" />
+					<input type="text" name="profile" />
+					<input type="button" value="Deattach profile" onclick="ha_deattachProfile()" />
+				</div>
 			</form>
-        	</div>
+		</div>
 	</body>
 </html>
