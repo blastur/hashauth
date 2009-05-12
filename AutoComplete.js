@@ -36,7 +36,7 @@
                               'element':document.getElementById(id),
                               'dropdown':null,							
                               'highlighted':null,
-			      'onSetValue':setvalue_callback};
+							  'onSetValue':setvalue_callback};
 
         __AutoComplete[id]['element'].setAttribute('autocomplete', 'off');
         __AutoComplete[id]['element'].onkeydown  = function(e) {return AutoComplete_KeyDown(this.getAttribute('id'), e);}
@@ -348,8 +348,8 @@
     function AutoComplete_SetValue(id)
     {
         __AutoComplete[id]['element'].value = __AutoComplete[id]['dropdown'].childNodes[__AutoComplete[id]['highlighted']].innerHTML;
-	if (__AutoComplete[id].onSetValue)
-		__AutoComplete[id].onSetValue(id, __AutoComplete[id]['dropdown'].childNodes[__AutoComplete[id]['highlighted']].innerHTML);
+		if (__AutoComplete[id].onSetValue)
+			__AutoComplete[id].onSetValue(id, __AutoComplete[id]['dropdown'].childNodes[__AutoComplete[id]['highlighted']].innerHTML);
     }
     
     
