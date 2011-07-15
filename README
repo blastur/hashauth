@@ -1,0 +1,20 @@
+Hashauth is a set of tools that helps you manage your passwords. Hashauth
+differs from traditional 'password managers' by deriving your passwords
+from mathematical functions (hash functions) rather than storing them on
+disk, and thus is completely liberated from password databases.
+
+Key features
+------------
+* Helps you manage (most of) your passwords.
+
+* Strong unique passwords for each resource (websites, e-mail accounts,
+IMs, etc..).
+
+* Does not depend on an encrypted password databases, or other external
+data. Hashauth is completely stateless.
+
+* For each resource, Hashauth requires the master password and the resource
+name to derive your password.
+
+* The resource name is an arbitrary string, but could be the domain name of
+a site, which is easy to remember.
